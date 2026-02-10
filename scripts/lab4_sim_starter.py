@@ -32,7 +32,10 @@ class PController:
         # Compute control action here
         ######### Your code starts here #########
         u = -self.kP * err
-        u = max(self.u_min, min(self.u_max, u))
+        if u < self.u_min:
+            u = self.u_min
+        elif u > self.u_max:
+            u = self.u_max
         self.t_prev = t
         return u
 
@@ -67,7 +70,10 @@ class PDController:
         ######### Your code starts here #########
         de = (err - self.err_prev) / dt
         u = -(self.kP * err + self.kD * de)
-        u = max(self.u_min, min(self.u_max, u))
+        if u < self.u_min:
+            u = self.u_min
+        elif u > self.u_max:
+            u = self.u_max
         self.t_prev = t
         self.err_prev = err
         return u
@@ -85,7 +91,7 @@ class RobotController:
 
         # Define PD controller for wall-following here
         ######### Your code starts here #########
-        self.controller = PController(kP=0.5, u_min=-2.84, u_max=2.84)
+        self.controller = PController(kP=0.2, u_min=-2.84, u_max=2.84)
 
         ######### Your code ends here #########
 
