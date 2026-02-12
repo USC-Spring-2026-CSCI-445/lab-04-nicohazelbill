@@ -21,7 +21,7 @@ class PController:
         self.kP = kP
         self.u_min = u_min
         self.u_max = u_max
-        self.t_prev = time()
+        self.t_prev = rospy.Time.now().to_sec()
         ######### Your code ends here #########
 
     def control(self, err, t):
@@ -32,11 +32,14 @@ class PController:
         # Compute control action here
         ######### Your code starts here #########
         u = -self.kP * err
+
         if u < self.u_min:
             u = self.u_min
         elif u > self.u_max:
             u = self.u_max
+        
         self.t_prev = t
+
         return u
 
         ######### Your code ends here #########
@@ -57,7 +60,7 @@ class PDController:
         self.kD = kD
         self.u_min = u_min
         self.u_max = u_max
-        self.t_prev = time()
+        self.t_prev = rospy.Time.now().to_sec()
         self.err_prev = 0
         ######### Your code ends here #########
 
@@ -70,12 +73,15 @@ class PDController:
         ######### Your code starts here #########
         de = (err - self.err_prev) / dt
         u = -(self.kP * err + self.kD * de)
+
         if u < self.u_min:
             u = self.u_min
         elif u > self.u_max:
             u = self.u_max
+
         self.t_prev = t
         self.err_prev = err
+
         return u
         ######### Your code ends here #########
 
@@ -91,7 +97,7 @@ class RobotController:
 
         # Define PD controller for wall-following here
         ######### Your code starts here #########
-        self.controller = PController(kP=0.2, u_min=-2.84, u_max=2.84)
+        self.controller = PDController(kP=1.0, kD=2.0, u_min=-2.86, u_max=2.86)
 
         ######### Your code ends here #########
 
@@ -120,7 +126,12 @@ class RobotController:
             # using PD controller, compute and send motor commands
             ######### Your code starts here #########
             err = self.desired_distance - self.ir_distance
-            u = self.controller.control(err, time())
+
+            t_now = rospy.Time.now().to_sec()
+
+            # controller (angular command)
+            u = self.controller.control(err, t_now)
+
             ctrl_msg.linear.x = 0.22
             ctrl_msg.angular.z = u
 
