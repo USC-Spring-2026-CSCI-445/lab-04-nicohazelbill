@@ -91,7 +91,7 @@ class RobotController:
 
         # Define PD controller for wall following here
         ######### Your code starts here #########
-        self.controller = PDController(kP=1.0, kD=2.0, u_min=-2.86, u_max=2.86)
+        self.controller = PDController(kP=1.0, kD=3.0, u_min=-2.86, u_max=2.86)
 
         ######### Your code ends here #########
 
@@ -129,9 +129,9 @@ class RobotController:
             # controller (angular command)
             u = self.controller.control(err, t_now)
 
-            ctrl_msg.linear.x = 0.22
+            ctrl_msg.linear.x = 0.08
             ctrl_msg.angular.z = u
-            
+
             ######### Your code ends here #########
 
             self.robot_ctrl_pub.publish(ctrl_msg)
@@ -139,8 +139,8 @@ class RobotController:
             rate.sleep()
 
 
-if __name__ == "__main__":
-    desired_distance = 0.4
+if __name__ == "__main__":  
+    desired_distance = 0.25
     controller = RobotController(desired_distance)
     try:
         controller.control_loop()
